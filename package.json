@@ -1,0 +1,12 @@
+{
+  "name": "testfluege-visualisierung",
+  "main": "docs/index.js",
+  "scripts": {
+    "process-anafi": "node src/process-anafi.js",
+    "process-dedrone": "node src/process-dedrone.js",
+    "start": "http-server docs -p 8000"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.3"
+  }
+}
