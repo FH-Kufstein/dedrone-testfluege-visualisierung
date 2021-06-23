@@ -16,6 +16,23 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: 'pk.eyJ1IjoicGF0cmlrOTgiLCJhIjoiY2txODN1cTAzMDFoMTJ1bHdtZnFkNnZrNiJ9.NyRH5elqV89-RTSJUp3Dkw'
 }).addTo(map);
 
+const sensor_positions = [
+    [47.151955, 10.746188],
+    [47.151291, 10.747304],
+    [47.1509223, 10.7462742],
+    [47.151956, 10.746218]
+];
+
+var sensor_icon = L.icon({
+    iconUrl: 'sensor.png',
+    iconSize:     [25, 20], // size of the icon
+    iconAnchor:   [12, 10], // point of the icon which will correspond to marker's location
+});
+
+sensor_positions.map(pos => {
+    L.marker(pos, {icon: sensor_icon}).addTo(map);
+});
+
 getData('t3')
 .then(data => {
     const latlngs = data.map((pos) => {
