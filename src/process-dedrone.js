@@ -34,7 +34,11 @@ let positions = [];
 dedrone_files.map((files, index) => {
     positions[index] = [];
     files.map(file => {
-        positions[index].push(readDedroneExport(file));
+        const pos = readDedroneExport(file);
+
+        if (pos.length > 0) {
+            positions[index].push(pos);
+        }
     });
 });
 
