@@ -46,7 +46,10 @@ dedrone_files.map((files, index) => {
 
 positions.map((position, index) => {
     const fqp = `docs/data/t${index + 1}/meas/t${index + 1}.json`;
-    writeFile(fqp, position);
+    
+    if (position.length > 0) {
+        writeFile(fqp, position);
+    }
 });
 
 function readDedroneExport(filename) {

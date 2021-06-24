@@ -33,37 +33,66 @@ sensor_positions.map(pos => {
     L.marker(pos, {icon: sensor_icon}).addTo(map);
 });
 
-getData('t3')
-.then(data => {
-    const gt = data[0];
-    const meas = data[1];
+async function prepareLayers() {
+    var overlays = {};
 
-    const gt_latlngs = gt.map((pos) => {
-        return [pos.lat, pos.lon];
-    });
+    for (let i = 1; i < 10; i++) {
+        const tag = `t${i}`;
+    
+        const data = await getData(tag);
+        const gt = data[0];
+        const meas = data[1];
 
-    const meas_latlngs = meas.map((pos) => {
-        return [pos.lat, pos.lon];
-    });
+        console.log(gt);
+        console.log(meas);
 
-    const gt_polyline_options = {
-        color: 'blue',
-        weight: 1
-    };
+        const gt_latlngs = gt.map((pos) => {
+            return [pos.lat, pos.lon];
+        });
+    
+        const meas_latlngs = meas.map((pos) => {
+            return [pos.lat, pos.lon];
+        });
 
-    const meas_polyline_options = {
-        color: 'red',
-        weight: 1
-    };
+        const gt_pl = drawPolyline(gt_latlngs, 'blue');
+        const meas_pl = drawPolyline(meas_latlngs, 'red');
 
-    console.log(gt);
-    console.log(meas);
+        const layerGroup = L.layerGroup();
 
-    const gt_polyline = new L.Polyline(gt_latlngs, gt_polyline_options);
-    const meas_polyline = new L.polyline(meas_latlngs, meas_polyline_options);
-    map.addLayer(gt_polyline);
-    map.addLayer(meas_polyline);
+        if (gt_pl) {
+            gt_pl.addTo(layerGroup);
+        }
+
+        if (meas_pl) {
+            meas_pl.addTo(layerGroup);
+        }
+
+        if (layerGroup.getLayers().length > 0) {
+            overlays[tag] = layerGroup;
+        }
+    }
+
+    return overlays;
+}
+
+prepareLayers().then(overlays => {
+    L.control.layers(null, overlays).addTo(map);
 });
+
+function drawPolyline(latlngs, color) {
+    let polyline = null;
+
+    if (latlngs.length > 0) {
+        const options = {
+            color: color,
+            weight: 1
+        }
+
+        polyline = new L.Polyline(latlngs, options);
+    }
+
+    return polyline;
+}
 
 async function getData(tag) {
     let gt = [];
@@ -73,13 +102,9 @@ async function getData(tag) {
         let r1 = await fetch(`./data/${tag}/gt/${tag}.json`);
         let r2 = await fetch(`./data/${tag}/meas/${tag}.json`);
     
-        if (r1.ok && r2.ok) {
-            gt = await r1.json();
-            meas = await r2.json();
-        } else {
-            alert("HTTP-Error: " + response.status);
-        }
-
-        return [gt[0], meas];
+        if (r1.ok) gt = await r1.json();
+        if (r2.ok) meas = await r2.json();
     }
+
+    return [gt, meas];
 }

@@ -7,4 +7,5 @@ module.exports = class Position {
       this.lat = lat;
       this.alt = alt;
     }
-  }
+    
+}

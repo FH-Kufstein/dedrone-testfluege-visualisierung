@@ -19,19 +19,27 @@ let anafi_t8_positions = [];
 let anafi_t9_positions = [];
 
 anafi_t3_files.map(filename => {
-    anafi_t3_positions.push(readAnafiExport(filename));
+    readAnafiExport(filename).map(position => {
+        anafi_t3_positions.push(position);
+    });
 });
 
 anafi_t7_files.map(filename => {
-    anafi_t7_positions.push(readAnafiExport(filename));
+    readAnafiExport(filename).map(position => {
+        anafi_t7_positions.push(position);
+    });
 });
 
 anafi_t8_files.map(filename => {
-    anafi_t8_positions.push(readAnafiExport(filename));
+    readAnafiExport(filename).map(position => {
+        anafi_t8_positions.push(position);
+    });
 });
 
 anafi_t9_files.map(filename => {
-    anafi_t9_positions.push(readAnafiExport(filename));
+    readAnafiExport(filename).map(position => {
+        anafi_t9_positions.push(position);
+    });
 });
 
 writeFile('docs/data/t3/gt/t3.json', anafi_t3_positions);
