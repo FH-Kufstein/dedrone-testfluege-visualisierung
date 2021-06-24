@@ -33,18 +33,20 @@ console.log('' + dedrone_files.length + ' dedrone paths discovered.');
 let positions = [];
 dedrone_files.map((files, index) => {
     positions[index] = [];
-    files.map(file => {
+    files.map((file) => {
         const pos = readDedroneExport(file);
 
         if (pos.length > 0) {
-            positions[index].push(pos);
+            pos.map(position => {
+                positions[index].push(position);
+            });
         }
     });
 });
 
-positions.map((pos, index) => {
+positions.map((position, index) => {
     const fqp = `docs/data/t${index + 1}/meas/t${index + 1}.json`;
-    writeFile(fqp, pos);
+    writeFile(fqp, position);
 });
 
 function readDedroneExport(filename) {

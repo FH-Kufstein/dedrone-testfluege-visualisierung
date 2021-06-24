@@ -35,32 +35,51 @@ sensor_positions.map(pos => {
 
 getData('t3')
 .then(data => {
-    const latlngs = data.map((pos) => {
+    const gt = data[0];
+    const meas = data[1];
+
+    const gt_latlngs = gt.map((pos) => {
         return [pos.lat, pos.lon];
     });
-    const polylineOptions = {
+
+    const meas_latlngs = meas.map((pos) => {
+        return [pos.lat, pos.lon];
+    });
+
+    const gt_polyline_options = {
         color: 'blue',
-        weight: 2
+        weight: 1
     };
-    const polyline = new L.Polyline(latlngs, polylineOptions);
-    map.addLayer(polyline);
+
+    const meas_polyline_options = {
+        color: 'red',
+        weight: 1
+    };
+
+    console.log(gt);
+    console.log(meas);
+
+    const gt_polyline = new L.Polyline(gt_latlngs, gt_polyline_options);
+    const meas_polyline = new L.polyline(meas_latlngs, meas_polyline_options);
+    map.addLayer(gt_polyline);
+    map.addLayer(meas_polyline);
 });
 
 async function getData(tag) {
-    let data = [];
+    let gt = [];
+    let meas = [];
+
     if (tag != null || tag != '') {
         let r1 = await fetch(`./data/${tag}/gt/${tag}.json`);
-        // let r2 = await fetch(`http://localhost:8000/${tag}/meas/${tag}.json`);
+        let r2 = await fetch(`./data/${tag}/meas/${tag}.json`);
     
-        // if (r1.ok && r2.ok) {
-        if (r1.ok) {
-            // gt = await r1.json();
-            // meas = await r2.json();
-            data = await r1.json();
+        if (r1.ok && r2.ok) {
+            gt = await r1.json();
+            meas = await r2.json();
         } else {
             alert("HTTP-Error: " + response.status);
         }
 
-        return data[0];
+        return [gt[0], meas];
     }
 }
