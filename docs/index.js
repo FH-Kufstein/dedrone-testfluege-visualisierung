@@ -1,15 +1,13 @@
-// const boundaries = [[47.584724, 12.171843], [47.583015, 12.174000]];
-
 const map = L.map('map', {
     center: [47.15148, 10.746726],
     zoom: 17,
-    minZoom: 16,
-    maxZoom: 18
+    minZoom: 15,
+    maxZoom: 20
 })
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
+    maxZoom: 22,
     id: 'mapbox/satellite-streets-v11',
     tileSize: 512,
     zoomOffset: -1,
@@ -34,7 +32,7 @@ sensor_positions.map(pos => {
 });
 
 async function prepareLayers() {
-    var overlays = {};
+    let overlays = {};
 
     for (let i = 1; i < 10; i++) {
         const tag = `t${i}`;
@@ -42,9 +40,6 @@ async function prepareLayers() {
         const data = await getData(tag);
         const gt = data[0];
         const meas = data[1];
-
-        console.log(gt);
-        console.log(meas);
 
         const gt_latlngs = gt.map((pos) => {
             return [pos.lat, pos.lon];
@@ -99,8 +94,8 @@ async function getData(tag) {
     let meas = [];
 
     if (tag != null || tag != '') {
-        let r1 = await fetch(`./data/${tag}/gt/${tag}.json`);
-        let r2 = await fetch(`./data/${tag}/meas/${tag}.json`);
+        let r1 = await fetch(`./data/${tag}/gt.json`);
+        let r2 = await fetch(`./data/${tag}/meas.json`);
     
         if (r1.ok) gt = await r1.json();
         if (r2.ok) meas = await r2.json();
