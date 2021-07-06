@@ -20,7 +20,7 @@ export class AnafiParser implements Parser {
                 if (value) {
                     const pt = new Point
                     (
-                        value[8], value[9],
+                        value[9], value[8],
                         {
                             ele: value[18],
                             time: new Date(ts + value[0]),
