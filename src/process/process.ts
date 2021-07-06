@@ -5,7 +5,7 @@ import { FileCollection } from './file-collection';
 
 const anafi_path: string = 'raw-data/AnafiExport';
 const br_path: string = 'raw-data/deDrone Log Export BlueRacoon';
-const gpx_path: string = 'raw-data/DeDrone Log';
+// const gpx_path: string = 'raw-data/DeDrone Log';
 
 const anafi_files: FileCollection = getFilesRecursively(anafi_path);
 const br_files: FileCollection = getFilesRecursively(br_path);
@@ -15,8 +15,8 @@ const anafi_pos: PositionCollection = getPositions(anafi_files, anafi_path, new 
 const br_pos: PositionCollection = getPositions(br_files, br_path, new BlueRacoonParser());
 // const gpx_pos: PositionCollection = getPositions(gpx_files, gpx_path, new DedroneGpxParser());
 
-// writePositions('gt', anafi_pos);
-// writePositions('meas', br_pos);
+writePositions('anafi', anafi_pos);
+writePositions('br', br_pos);
 // writePositions('gpx', gpx_pos);
 
 function getPositions(files: FileCollection, path: string, parser: Parser): PositionCollection {
@@ -27,7 +27,7 @@ function getPositions(files: FileCollection, path: string, parser: Parser): Posi
 
         if (files[key].length > 0) {
             files[key].forEach(file => {
-                const tmp = parser.parse(`${path}/${key}/${file}`);
+                const tmp = parser.read(`${path}/${key}/${file}`);
                 positions[key] = positions[key].concat(tmp);
             });
         }
