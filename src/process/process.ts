@@ -1,19 +1,23 @@
 import { getFilesRecursively, writeFile } from '.';
 import { PositionCollection } from '../models';
-import { Parser, AnafiParser, DedroneParser } from '.';
+import { Parser, AnafiParser, BlueRacoonParser } from './parser';
 import { FileCollection } from './file-collection';
 
 const anafi_path: string = 'raw-data/AnafiExport';
-const dedrone_path: string = 'raw-data/deDrone Log Export BlueRacoon';
+const br_path: string = 'raw-data/deDrone Log Export BlueRacoon';
+const gpx_path: string = 'raw-data/DeDrone Log';
 
 const anafi_files: FileCollection = getFilesRecursively(anafi_path);
-const dedrone_files: FileCollection = getFilesRecursively(dedrone_path);
+const br_files: FileCollection = getFilesRecursively(br_path);
+// const gpx_files: FileCollection = getFilesRecursively(gpx_path);
 
 const anafi_pos: PositionCollection = getPositions(anafi_files, anafi_path, new AnafiParser());
-const dedrone_pos: PositionCollection = getPositions(dedrone_files, dedrone_path, new DedroneParser());
+const br_pos: PositionCollection = getPositions(br_files, br_path, new BlueRacoonParser());
+// const gpx_pos: PositionCollection = getPositions(gpx_files, gpx_path, new DedroneGpxParser());
 
-writePositions('gt', anafi_pos);
-writePositions('meas', dedrone_pos);
+// writePositions('gt', anafi_pos);
+// writePositions('meas', br_pos);
+// writePositions('gpx', gpx_pos);
 
 function getPositions(files: FileCollection, path: string, parser: Parser): PositionCollection {
     const positions: PositionCollection = { };

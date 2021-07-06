@@ -3,7 +3,7 @@ const map = L.map('map', {
     zoom: 17,
     minZoom: 15,
     maxZoom: 20
-})
+});
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -29,6 +29,10 @@ var sensor_icon = L.icon({
 
 sensor_positions.map(pos => {
     L.marker(pos, {icon: sensor_icon}).addTo(map);
+});
+
+prepareLayers().then(overlays => {
+    L.control.layers(null, overlays).addTo(map);
 });
 
 async function prepareLayers() {
@@ -70,9 +74,20 @@ async function prepareLayers() {
     return overlays;
 }
 
-prepareLayers().then(overlays => {
-    L.control.layers(null, overlays).addTo(map);
-});
+async function getData(tag) {
+    let gt = [];
+    let meas = [];
+
+    if (tag != null || tag != '') {
+        let r1 = await fetch(`./data/${tag}/gt.json`);
+        let r2 = await fetch(`./data/${tag}/meas.json`);
+    
+        if (r1.ok) gt = await r1.json();
+        if (r2.ok) meas = await r2.json();
+    }
+
+    return [gt, meas];
+}
 
 function drawPolyline(latlngs, color) {
     let polyline = null;
@@ -87,19 +102,4 @@ function drawPolyline(latlngs, color) {
     }
 
     return polyline;
-}
-
-async function getData(tag) {
-    let gt = [];
-    let meas = [];
-
-    if (tag != null || tag != '') {
-        let r1 = await fetch(`./data/${tag}/gt.json`);
-        let r2 = await fetch(`./data/${tag}/meas.json`);
-    
-        if (r1.ok) gt = await r1.json();
-        if (r2.ok) meas = await r2.json();
-    }
-
-    return [gt, meas];
 }

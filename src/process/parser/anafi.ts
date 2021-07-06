@@ -1,11 +1,11 @@
 import { Parser } from './parser';
-import { Position } from '../models';
+import { Position } from '../../models';
 import * as fs from 'fs';
 
 export class AnafiParser implements Parser {
     constructor() { }
 
-    parse(fqp: string): Position[] {
+    read(fqp: string): Position[] {
         const positions: Position[] = [];
 
         try {
@@ -23,7 +23,7 @@ export class AnafiParser implements Parser {
                 }
             });
         }
-        catch (err) {
+        catch(err) {
             console.log(err);
         }
     
