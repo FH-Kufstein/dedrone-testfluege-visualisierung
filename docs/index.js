@@ -21,7 +21,7 @@ const sensor_positions = [
     [47.151956, 10.746218]
 ];
 
-var sensor_icon = L.icon({
+const sensor_icon = L.icon({
     iconUrl: 'sensor.png',
     iconSize:     [25, 20], // size of the icon
     iconAnchor:   [12, 10], // point of the icon which will correspond to marker's location
@@ -31,75 +31,91 @@ sensor_positions.map(pos => {
     L.marker(pos, {icon: sensor_icon}).addTo(map);
 });
 
-prepareLayers().then(overlays => {
+let endpoints = {};
+const filenames = ['anafi.gpx', 'br.gpx', 'dd.gpx'];
+
+// prepare endpoints manually
+for (let i = 0; i < 9; i++) {
+    const tmp = [];
+    filenames.forEach(filename => {
+        tmp.push(`t${i + 1}/${filename}`);
+    });
+    endpoints[`t${i + 1}`] = tmp;
+}
+
+exec(endpoints)
+.then(overlays => {
     L.control.layers(null, overlays).addTo(map);
 });
 
-async function prepareLayers() {
-    let overlays = {};
+async function exec(endpoints) {
+    const overlays = { };
 
-    for (let i = 1; i < 10; i++) {
-        const test_tag = `t${i}`;
-    
-        const data = await getData(test_tag);
-        const anafi = data[0];
-        const br = data[1];
+    for (const key of Object.keys(endpoints)) {
+        const data_per_test = [];
 
-        const anafi_latlngs = anafi.map((pos) => {
-            return [pos.lat, pos.lon];
-        });
-    
-        const br_latlngs = br.map((pos) => {
-            return [pos.lat, pos.lon];
-        });
-
-        const anafi_pl = drawPolyline(anafi_latlngs, 'blue');
-        const br_pl = drawPolyline(br_latlngs, 'red');
-
-        const layerGroup = L.layerGroup();
-
-        if (anafi_pl) {
-            anafi_pl.addTo(layerGroup);
+        for (const endpoint of Object.values(endpoints[key])) {
+            const data = await getData(endpoint);
+            data_per_test.push(data);
         }
 
-        if (br_pl) {
-            br_pl.addTo(layerGroup);
-        }
-
-        if (layerGroup.getLayers().length > 0) {
-            overlays[test_tag] = layerGroup;
+        if (data_per_test.length > 0) {
+            const layerGroup = await generateLayers(data_per_test);
+            if (layerGroup.getLayers().length > 0) {
+                // drawLayers(layerGroup);
+                overlays[key] = layerGroup;
+            }
         }
     }
 
-    return overlays;
+    return Promise.resolve(overlays);
 }
 
-async function getData(test_tag) {
-    let anafi = [];
-    let br = [];
+// generate layers per test, one layer per file in corresponding test folder
+async function generateLayers(data) {
+    const layerGroup = L.layerGroup();
 
-    if (tag != null || tag != '') {
-        let r1 = await fetch(`./data/${test_tag}/anafi.gpx`);
-        let r2 = await fetch(`./data/${test_tag}/br.gpx`);
-    
-        if (r1.ok) anafi = await r1.json();
-        if (r2.ok) br = await r2.json();
+    const gpx_options = function(color) {
+        return {
+            async: true,
+            marker_options: {
+                startIconUrl: '',
+                endIconUrl: '',
+                shadowUrl: ''
+            },
+            polyline_options: {
+                color: `${color}`,
+                opacity: 1,
+                weight: 4,
+                lineCap: 'round'
+            }
+        }
     }
 
-    return [anafi, br];
+    const colors = ['white', 'lightgrey', 'darkblue'];
+
+    if (data && Array.isArray(data)) {
+        for (const gpx of data) {
+            const idx = data.indexOf(gpx);
+            const layer = new L.GPX(gpx, gpx_options(colors[idx]));
+            layer.addTo(layerGroup);
+        }
+    }
+
+    return Promise.resolve(layerGroup);
 }
 
-function drawPolyline(latlngs, color) {
-    let polyline = null;
+async function getData(endpoint) {
+    try {
+        const res = await fetch(`./data/${endpoint}`)
 
-    if (latlngs.length > 0) {
-        const options = {
-            color: color,
-            weight: 1
+        if (res.ok) {
+            const data = await res.text();
+            return Promise.resolve(data);
         }
-
-        polyline = new L.Polyline(latlngs, options);
     }
-
-    return polyline;
+    catch(err) {
+        console.log(err);
+        return Promise.reject(err);
+    }
 }
