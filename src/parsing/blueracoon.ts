@@ -2,9 +2,10 @@ import * as fs from 'fs';
 import { Parser } from './parser';
 import { Point } from 'gpx-builder/dist/builder/BaseBuilder/models';
 
-export class BlueRacoonParser implements Parser {
-    constructor() { }
+export class BlueRacoonParser extends Parser {
+    constructor() { super(); }
 
+    //custom json
     read(fqp: string): Point[] {
         const points: Point[] = [];
 
@@ -22,15 +23,14 @@ export class BlueRacoonParser implements Parser {
                 if (contents.positions.length > 0) {
                     contents.positions.map((value: any) => {
                         if (value && value != 'null') {
-                            const pt = new Point
-                            (
+                            const pt: Point = new Point(
                                 value.latitude, value.longitude,
                                 {
-                                    ele: value.altitude,
+                                    ele: value.ele,
                                     time: new Date(value.timestamp),
                                     name: droneName
                                 }
-                            );
+                            )
                             points.push(pt);
                         }
                     });

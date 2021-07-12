@@ -2,9 +2,10 @@ import * as fs from 'fs';
 import { Parser } from './parser';
 import { Point } from 'gpx-builder/dist/builder/BaseBuilder/models';
 
-export class AnafiParser implements Parser {
-    constructor() { }
+export class AnafiParser extends Parser {
+    constructor() { super(); }
 
+    //custom json
     read(fqp: string): Point[] {
         const points: Point[] = [];
 
@@ -18,8 +19,7 @@ export class AnafiParser implements Parser {
     
             contents.details_data.map((value: any) => {
                 if (value) {
-                    const pt = new Point
-                    (
+                    const pt = new Point(
                         value[9], value[8],
                         {
                             ele: value[18],

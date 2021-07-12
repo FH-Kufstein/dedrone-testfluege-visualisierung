@@ -39,54 +39,54 @@ async function prepareLayers() {
     let overlays = {};
 
     for (let i = 1; i < 10; i++) {
-        const tag = `t${i}`;
+        const test_tag = `t${i}`;
     
-        const data = await getData(tag);
-        const gt = data[0];
-        const meas = data[1];
+        const data = await getData(test_tag);
+        const anafi = data[0];
+        const br = data[1];
 
-        const gt_latlngs = gt.map((pos) => {
+        const anafi_latlngs = anafi.map((pos) => {
             return [pos.lat, pos.lon];
         });
     
-        const meas_latlngs = meas.map((pos) => {
+        const br_latlngs = br.map((pos) => {
             return [pos.lat, pos.lon];
         });
 
-        const gt_pl = drawPolyline(gt_latlngs, 'blue');
-        const meas_pl = drawPolyline(meas_latlngs, 'red');
+        const anafi_pl = drawPolyline(anafi_latlngs, 'blue');
+        const br_pl = drawPolyline(br_latlngs, 'red');
 
         const layerGroup = L.layerGroup();
 
-        if (gt_pl) {
-            gt_pl.addTo(layerGroup);
+        if (anafi_pl) {
+            anafi_pl.addTo(layerGroup);
         }
 
-        if (meas_pl) {
-            meas_pl.addTo(layerGroup);
+        if (br_pl) {
+            br_pl.addTo(layerGroup);
         }
 
         if (layerGroup.getLayers().length > 0) {
-            overlays[tag] = layerGroup;
+            overlays[test_tag] = layerGroup;
         }
     }
 
     return overlays;
 }
 
-async function getData(tag) {
-    let gt = [];
-    let meas = [];
+async function getData(test_tag) {
+    let anafi = [];
+    let br = [];
 
     if (tag != null || tag != '') {
-        let r1 = await fetch(`./data/${tag}/gt.json`);
-        let r2 = await fetch(`./data/${tag}/meas.json`);
+        let r1 = await fetch(`./data/${test_tag}/anafi.gpx`);
+        let r2 = await fetch(`./data/${test_tag}/br.gpx`);
     
-        if (r1.ok) gt = await r1.json();
-        if (r2.ok) meas = await r2.json();
+        if (r1.ok) anafi = await r1.json();
+        if (r2.ok) br = await r2.json();
     }
 
-    return [gt, meas];
+    return [anafi, br];
 }
 
 function drawPolyline(latlngs, color) {
