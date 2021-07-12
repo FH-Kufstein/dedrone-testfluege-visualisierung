@@ -27,8 +27,9 @@ const sensor_icon = L.icon({
     iconAnchor:   [12, 10], // point of the icon which will correspond to marker's location
 });
 
+const sensor_markers = L.layerGroup();
 sensor_positions.map(pos => {
-    L.marker(pos, {icon: sensor_icon}).addTo(map);
+   L.marker(pos, {icon: sensor_icon}).addTo(sensor_markers);
 });
 
 let endpoints = {};
@@ -45,6 +46,7 @@ for (let i = 0; i < 9; i++) {
 
 exec(endpoints)
 .then(overlays => {
+    overlays['sensors'] = sensor_markers;
     L.control.layers(null, overlays).addTo(map);
 });
 
