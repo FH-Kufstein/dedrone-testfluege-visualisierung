@@ -33,7 +33,7 @@ sensor_positions.map(pos => {
 });
 
 let endpoints = {};
-const filenames = ['anafi.gpx', 'br.gpx', 'dd.gpx'];
+const filenames = ['anafi.gpx', 'br.gpx', 'dd.gpx', 'twins.gpx'];
 
 // prepare endpoints manually
 for (let i = 0; i < 9; i++) {
@@ -94,7 +94,7 @@ async function generateLayers(data) {
         }
     }
 
-    const colors = ['white', 'lightgrey', 'darkblue'];
+    const colors = ['white', 'lightgrey', 'darkblue', 'red'];
 
     if (data && Array.isArray(data)) {
         for (const gpx of data) {
