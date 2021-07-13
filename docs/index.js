@@ -44,11 +44,29 @@ for (let i = 0; i < 9; i++) {
     endpoints[`t${i + 1}`] = tmp;
 }
 
+const colors = ['white', 'darkblue', 'lightblue', 'red'];
+
 exec(endpoints)
 .then(overlays => {
     overlays['sensors'] = sensor_markers;
     L.control.layers(null, overlays).addTo(map);
 });
+
+const legend = L.control({position: 'topright'});  
+
+legend.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'info legend');
+    const labels = ['<strong>Legende</strong>'];
+
+    filenames.forEach((fn, idx) => {
+        labels.push('<i style="background:' + colors[idx] + '"></i>' + fn + '<br>');
+    });
+ 
+    div.innerHTML = labels.join('<br>');
+    return div;
+};
+
+legend.addTo(map);
 
 async function exec(endpoints) {
     const overlays = { };
@@ -93,8 +111,6 @@ async function generateLayers(data) {
             }
         }
     }
-
-    const colors = ['white', 'lightgrey', 'darkblue', 'red'];
 
     if (data && Array.isArray(data)) {
         for (const gpx of data) {
